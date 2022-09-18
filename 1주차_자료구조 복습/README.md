@@ -1,4 +1,4 @@
-[외계인의 기타연주 _ 스택활용 문제](https://www.acmicpc.net/problem/2841)
+[백준 : 외계인의 기타연주 _ 스택활용 문제](https://www.acmicpc.net/problem/2841)
 
 ```C
 #include <stdio.h>
