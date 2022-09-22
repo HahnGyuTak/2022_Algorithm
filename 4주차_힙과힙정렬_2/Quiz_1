@@ -21,8 +21,7 @@ int main()
     for (int i = 1; i <= x.n; i++)
         scanf("%d", x.h + i);
     rBuildHeap(&x, 1);
-    printArray(x);
-    printf("\n");
+
     inPlaceHeapSort(&x);
     printArray(x);
 
