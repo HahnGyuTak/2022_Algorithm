@@ -18,12 +18,12 @@ typedef struct List
 void    initList(List *x);
 node    *getNode(int val);
 void    addLast(List *x, int val);
-void    printList(List x);
+void    printList(node *x);
 
 //-------Merge Func----------
 node    **partition(node *x);
 node    *merge(node *x, node *y);
-void    mergesort(node *x);
+void    mergesort(node **x);
 
 int main()
 {
@@ -36,68 +36,73 @@ int main()
         scanf("%d", &val);
         addLast(&x, val);
     }
-    printList(x);
-    mergesort(x.H);
-    printList(x);
+    mergesort(&x.H);
+    printList(x.H);
     return 0;
 }
 
 //--------Merge---------
-void mergesort(node *x)
+void mergesort(node **x)
 {
-    if (x->next->next == NULL)
+    //printf("\nfull list : "); printList(*x);
+    if ((*x)->next == NULL)
+        return ;
+    if ((*x)->next->next == NULL)
     {
-        if (x->val > x->next->val)
+        if ((*x)->val > (*x)->next->val)
         {
-            x->next->next = x;
-            x = x->next;
-            x->next->next = NULL;
+            (*x)->next->next = (*x);
+            (*x) = (*x)->next;
+            (*x)->next->next = NULL;
         }
         return ;
     }
-    if (x->next == NULL)
-        return ;
-    node **p = partition(x);
-    mergesort(p[0]);
-    mergesort(p[1]);
-    x = merge(p[0], p[1]);
+    node **p = partition(*x);
+    
+    mergesort(p);
+    mergesort(p + 1);
+    //printf("left : "); printList(p[0]);
+    //printf("right : "); printList(p[1]);
+    *x = merge(p[0], p[1]);
 }
 
 node* merge(node *x, node *y)
 {
     node *tmp = NULL;
-    node *p = tmp, *px = x, *py = y;
-    while (px && py)
+    if (x->val < y->val)
     {
-        if (px->val < py->val)
+       tmp = x;
+       x = x->next;
+    }
+    else
+    {
+       tmp = y;
+       y = y->next;
+    }
+    
+    node *p = tmp;
+    while (x && y)
+    {
+        if (x->val < y->val)
         {
-            if (!p)
-                p = px;
-            else
-            {
-                p->next = px;
-                p = p->next;
-            }
-            px = px->next;
+            p->next = x;
+            x = x->next;
         }
         else
         {
-            if (!p)
-                p = py;
-            else
-            {
-                p->next = py;
-                p = p->next;
-            }
-            py = py->next;
+           p->next = y;
+           y = y->next;
         }
+        p = p->next;
+        //printf("px %d py %d\n",x->val, y->val);
     }
-    while (!px)
-        p->next = px;
- 
-    while (!py)
-        p->next = py;
+    //printf("end of while : "); printList(tmp);
+    if (x)
+        p->next = x;
 
+    else if (y)
+        p->next = y;
+    //printf("merged list : "); printList(tmp);
     return tmp;
 }
 
@@ -107,11 +112,11 @@ node **partition(node *H)
     node    **x = malloc(sizeof(node*) * 2);
     int     cnt;
     
-    x[1] = tmp;
+    x[0] = tmp;
     for (cnt = 0; tmp != NULL; cnt++)
         tmp = tmp->next;
     tmp = H;
-    for (int i = 0; i < cnt / 2; i++)
+    for (int i = 1; i < cnt / 2; i++)
         tmp = tmp->next;
     x[1] = tmp->next;
     tmp->next = NULL;
@@ -148,12 +153,12 @@ void addLast(List *x, int val)
             tmp = tmp->next;
         tmp->next = p;
     }
-    printList(*x);
 }
 
-void printList(List x)
+void printList(node* x)
 {
-    for (node *p = x.H; p != NULL; p = p->next)
+    for (node *p = x; p != NULL; p = p->next)
         printf(" %d", p->val);
+    printf("\n");
 }
 ```
