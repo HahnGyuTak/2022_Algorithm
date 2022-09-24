@@ -1,5 +1,6 @@
 ```C
 #include <stdio.h>
+#include <stdlib.h>
 
 typedef struct node
 {
@@ -13,102 +14,116 @@ typedef struct List
     int n;
 }List;
 
-void initList(List *x);
-node *getNode(int val);
-void addLast(List *x, int val);
-List *seperate(List *x);
-List *merge(List *x, List *y);
-void mergesort(List *x);
-void printList(List x);
+//-------List Func-----------
+void    initList(List *x);
+node    *getNode(int val);
+void    addLast(List *x, int val);
+void    printList(List x);
+
+//-------Merge Func----------
+node    **partition(node *x);
+node    *merge(node *x, node *y);
+void    mergesort(node *x);
 
 int main()
 {
     List x; initList(&x);
-    int val;
-    scanf("%d", &x.n);
+    int N, val;
+    
+    scanf("%d", &N); x.n = N;
     for (int i = 0; i < x.n; i++)
     {
         scanf("%d", &val);
         addLast(&x, val);
     }
-    mergesort(&x);
+    printList(x);
+    mergesort(x.H);
     printList(x);
     return 0;
 }
-void mergesort(List *x)
+
+//--------Merge---------
+void mergesort(node *x)
 {
-    if (x->n <= 2)
+    if (x->next->next == NULL)
     {
-        if (x->n == 1)
-            return ;
-        if (x->H->next->val > x->H->next->next->val)
-            
+        if (x->val > x->next->val)
+        {
+            x->next->next = x;
+            x = x->next;
+            x->next->next = NULL;
+        }
+        return ;
     }
-    List *l = seperate(x);
-    mergesort(l);
-    mergesort(l + 1);
-    
-    x = merge(l, l + 1);
+    if (x->next == NULL)
+        return ;
+    node **p = partition(x);
+    mergesort(p[0]);
+    mergesort(p[1]);
+    x = merge(p[0], p[1]);
 }
-List* merge(List *x, List *y)
+
+node* merge(node *x, node *y)
 {
-    List tmp; initList(&tmp);
-    node *px = x->H->next, *py = y->H->next;
-    node *pt = tmp.H;
+    node *tmp = NULL;
+    node *p = tmp, *px = x, *py = y;
     while (px && py)
     {
-        node *t = NULL;
-        if (px->val > py->val)
+        if (px->val < py->val)
         {
-            t = py;
-            py = py->next;
+            if (!p)
+                p = px;
+            else
+            {
+                p->next = px;
+                p = p->next;
+            }
+            px = px->next;
         }
         else
         {
-            t = px;
-            px = px->next;
+            if (!p)
+                p = py;
+            else
+            {
+                p->next = py;
+                p = p->next;
+            }
+            py = py->next;
         }
-        pt->next = t;
-        t->next = NULL;
-        pt = pt->next;
     }
-    while (px)
-    {
-        pt->next = px;
-        px = px->next;
-        pt->next->next = NULL;
-        pt = pt->next;
-    }
-    while (py)
-    {
-        pt->next = py;
-        py = py->next;
-        pt->next->next = NULL;
-        pt = pt->next;
-    }
-    return &tmp;
+    while (!px)
+        p->next = px;
+ 
+    while (!py)
+        p->next = py;
+
+    return tmp;
 }
 
-List *seperate(List *p)
+node **partition(node *H)
 {
-    List x[2];
-    node *tmp = p->H;
-    x[0].H->next = p->H.next;
-    for (int i = 0; i < p->n; i++)
-    {
-        if (i == p.n / 2)
-            x[1].H->next = tmp;
-        
+    node    *tmp = H;
+    node    **x = malloc(sizeof(node*) * 2);
+    int     cnt;
+    
+    x[1] = tmp;
+    for (cnt = 0; tmp != NULL; cnt++)
         tmp = tmp->next;
-    }
-    x[0].n = p.n / 2;
-    x[1].n = p.n - n/2;
+    tmp = H;
+    for (int i = 0; i < cnt / 2; i++)
+        tmp = tmp->next;
+    x[1] = tmp->next;
+    tmp->next = NULL;
+    
     return x;
 }
 
+//------------List--------------
 void initList(List *x)
 {
-    x->H->next = NULL;
+    x->H = NULL;
+    x->n = 0;
 }
 
 node *getNode(int val)
@@ -123,11 +138,17 @@ node *getNode(int val)
 void addLast(List *x, int val)
 {
     node *p = getNode(val);
-    node *tmp = x.H;
+    node *tmp = x->H;
     
-    while (tmp->next != NULL)
-        tmp = tmp->next;
-    tmp->next = p;
+    if (!x->H)
+        x->H = p;
+    else
+    {
+        while (tmp->next != NULL)
+            tmp = tmp->next;
+        tmp->next = p;
+    }
+    printList(*x);
 }
 
 void printList(List x)
