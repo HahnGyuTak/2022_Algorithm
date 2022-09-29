@@ -17,53 +17,43 @@ typedef struct List
 //-------List Func-----------
 void    initList(List *x);
 node    *getNode(int val);
-void    addLast(List *x, int val);
+node    *addLast(node *x, int val);
 void    printList(node *x);
 
-//-------Merge Func----------
-node    **partition(node *x);
+//-------Quick Func----------
+node    **partition(node *x, int n);
 node    *merge(node *x, node *y);
-void    mergesort(node **x);
+node    *mergesort(node **x, int n);
 
 int main()
 {
     List x; initList(&x);
     int N, val;
+    node *p = x.H;
     
     scanf("%d", &N); x.n = N;
     for (int i = 0; i < x.n; i++)
     {
         scanf("%d", &val);
-        addLast(&x, val);
+        p = addLast(p, val);
     }
-    mergesort(&x.H);
-    printList(x.H);
+    x.H->next = mergesort(&(x.H->next), x.n);
+    printList(x.H->next);
     return 0;
 }
 
 //--------Merge---------
-void mergesort(node **x)
+node *mergesort(node **x, int n)
 {
     //printf("\nfull list : "); printList(*x);
-    if ((*x)->next == NULL)
-        return ;
-    if ((*x)->next->next == NULL)
-    {
-        if ((*x)->val > (*x)->next->val)
-        {
-            (*x)->next->next = (*x);
-            (*x) = (*x)->next;
-            (*x)->next->next = NULL;
-        }
-        return ;
-    }
-    node **p = partition(*x);
+    if (n == 1)
+        return *x;
+    node **p = partition(*x, n / 2);
     
-    mergesort(p);
-    mergesort(p + 1);
-    //printf("left : "); printList(p[0]);
-    //printf("right : "); printList(p[1]);
-    *x = merge(p[0], p[1]);
+    p[0] = mergesort(p, n / 2);
+    p[1] = mergesort(p + 1, n - n / 2);
+    //printf("left : "); printList(p[0]); printf("right : "); printList(p[1]);
+    return merge(p[0], p[1]);
 }
 
 node* merge(node *x, node *y)
@@ -102,21 +92,16 @@ node* merge(node *x, node *y)
 
     else if (y)
         p->next = y;
-    //printf("merged list : "); printList(tmp);
     return tmp;
 }
 
-node **partition(node *H)
+node **partition(node *H, int n)
 {
     node    *tmp = H;
     node    **x = malloc(sizeof(node*) * 2);
-    int     cnt;
     
     x[0] = tmp;
-    for (cnt = 0; tmp != NULL; cnt++)
-        tmp = tmp->next;
-    tmp = H;
-    for (int i = 1; i < cnt / 2; i++)
+    for (int i = 1; i < n; i++)
         tmp = tmp->next;
     x[1] = tmp->next;
     tmp->next = NULL;
@@ -127,7 +112,7 @@ node **partition(node *H)
 //------------List--------------
 void initList(List *x)
 {
-    x->H = NULL;
+    x->H = getNode(0);
     x->n = 0;
 }
 
@@ -140,19 +125,12 @@ node *getNode(int val)
     return p;
 }
 
-void addLast(List *x, int val)
+node *addLast(node *x, int val)
 {
     node *p = getNode(val);
-    node *tmp = x->H;
+    x->next = p;
     
-    if (!x->H)
-        x->H = p;
-    else
-    {
-        while (tmp->next != NULL)
-            tmp = tmp->next;
-        tmp->next = p;
-    }
+    return p;
 }
 
 void printList(node* x)
