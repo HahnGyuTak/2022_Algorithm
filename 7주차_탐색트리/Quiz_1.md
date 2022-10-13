@@ -93,7 +93,7 @@ TreeNode *sibling(TreeNode *z)
         return z->parent->lChild;
 }
 
-void reduceExternal(TreeNode *z, TreeNode *root)
+void reduceExternal(TreeNode *z, TreeNode **root)
 {
     TreeNode *w = z->parent;
     TreeNode *g = w->parent;
@@ -102,7 +102,7 @@ void reduceExternal(TreeNode *z, TreeNode *root)
     zs->parent = g;
     
     if (g == NULL)
-        root = zs;
+        *root = zs;
     else
         if (w == g->lChild)
             g->lChild = zs;
@@ -113,9 +113,9 @@ void reduceExternal(TreeNode *z, TreeNode *root)
     free(w);
 }
 
-int removeElement(TreeNode *root, int key)
+int removeElement(TreeNode **root, int key)
 {
-    TreeNode *w = treeSearch(root, key);
+    TreeNode *w = treeSearch(*root, key);
     if (isExternal(w))
         return -1;
         
@@ -166,7 +166,7 @@ int main()
                 break;
             case 'd':
                 scanf("%d", &k);
-                int q = removeElement(root, k);
+                int q = removeElement(&root, k);
                 if (q == -1) printf("X\n");
                 else printf("%d\n", q);
                 break;
@@ -188,5 +188,4 @@ int main()
     }
     return 0;
 }
-
 ```
