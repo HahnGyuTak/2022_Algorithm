@@ -1,4 +1,4 @@
-[보석 도둑](https://www.acmicpc.net/problem/1202)
+##[보석 도둑](https://www.acmicpc.net/problem/1202)
 
 [C언어 구현](```C)
 
