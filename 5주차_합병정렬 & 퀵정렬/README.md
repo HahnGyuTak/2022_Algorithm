@@ -1,5 +1,7 @@
 [보석 도둑](https://www.acmicpc.net/problem/1202)
+
 [C언어 구현](```C)
+
 [Python 구현](```Python)
 ```C
 #include <stdlib.h>
