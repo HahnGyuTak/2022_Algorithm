@@ -1,8 +1,10 @@
 ## [보석 도둑](https://www.acmicpc.net/problem/1202)
 
-[C언어 구현](```C)
+[C언어 구현](#### C)
 
-[Python 구현](```Python)
+[Python 구현](#### Python)
+
+#### C언어
 ```C
 #include <stdlib.h>
 #include <stdio.h>
@@ -184,6 +186,7 @@ Heap *initHeap(int n)
 14*/
 ```
 
+#### Python
 ```Python
 import heapq
 import sys
