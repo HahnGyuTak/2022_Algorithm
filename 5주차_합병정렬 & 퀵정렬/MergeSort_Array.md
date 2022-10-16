@@ -2,35 +2,42 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-void mergerSort(int *ar, int *tmp, int left, int right)
+void mergeSort(int *ar, int left, int right, int *buff)
 {
-    if (right <= left) return ;
+    if (left >= right) return ;
     int mid = (left + right) / 2;
     
-    mergerSort(ar, tmp, left, mid);
-    mergerSort(ar, tmp, mid + 1, right);
+    mergeSort(ar, left, mid, buff);
+    mergeSort(ar, mid + 1, right, buff);
     
-    int idx_ar = left, idx_tmp = 0, j = 0;
-    for ( ; idx_ar <= mid; idx_ar++)
-        tmp[idx_tmp++] = ar[idx_ar];
+    int ib = 0, i = left;
+    while (i <= mid)
+        buff[ib++] = ar[i++];
     
-    for ( ; idx_ar <= right && j < idx_tmp; )
-        ar[left++] = ar[idx_ar] < tmp[j] ? ar[idx_ar++] : tmp[j++];
-    
-    while (j < idx_tmp)
-        ar[left++] = tmp[j++];
-   
+    int jb = 0, j = i, ix = left;
+    while (jb < ib && j <= right)
+        ar[ix++] = ar[j] < buff[jb] ? ar[j++] : buff[jb++];
+        
+    while (jb < ib)
+        ar[ix++] = buff[jb++];
 }
 
 int main()
 {
-    int array[9] = {5, 10, 3, 2, 6, 1, 7, 15, 9};
-    int tmp[9];
+    int N; scanf("%d", &N);
+    int *ar = (int *)malloc(sizeof(int) * N);
+    int *buff = (int *)malloc(sizeof(int) * N);
     
-    mergerSort(array, tmp, 0, 8);
+    for (int i = 0; i < N; i++) scanf("%d", ar + i);
     
-    for (int i = 0; i < 9; i++)
-        printf(" %d", array[i]);
+    mergeSort(ar, 0, N - 1, buff);
+    
+    for (int i = 0; i < N; i++) printf(" %d", ar[i]);
+
     return 0;
 }
+/*
+8
+73 65 48 31 29 20 8 3
+*/
 ```
