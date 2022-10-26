@@ -70,9 +70,15 @@ void insertionSort(SetType *x)
         int key = tmp->elem;
         while (p != x->H)
         {
-            if (p->elem > p->next->elem)
+            if (p->elem > key)
             {
                 p->next->elem = p->elem;
+                p = p->prev;
+            }
+            else if (p->elem == key)
+            {
+                p->prev->next = p->next;
+                p->next->prev = p->prev;
                 p = p->prev;
             }
             else
@@ -166,7 +172,7 @@ int main()
     printf("A :"); printList(s1);
     printf("B :"); printList(s2);
     
-    selectSort(s1);
+    insertionSort(s1);
     selectSort(s2);
     
     printf("Sort A :"); printList(s1);
