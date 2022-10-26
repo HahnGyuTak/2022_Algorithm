@@ -1,3 +1,6 @@
+[20&21년도 알고리즘 중간고사 무인.pdf](https://github.com/HanGyuTak/2022_Algorithm/files/9871080/20.21.pdf)
+
+
 ```C
 #include <stdlib.h>
 #include <stdio.h>
