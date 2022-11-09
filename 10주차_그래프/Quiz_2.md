@@ -107,6 +107,20 @@ void findAdj(Graph *x, int name)
 void removeEdge(Graph *x, int v1, int v2)
 {
     x->matrixEdge[v1][v2] = x->matrixEdge[v2][v1] = NULL;
+    Edge *p = x->eHead;
+    if ((p->v1 == v1 && p->v2 == v2) || (p->v2 == v1 && p->v1 == v2))
+    {
+        x->eHead = p->next;
+        free(p);
+    }
+    else
+    {
+        while (!(p->next->v1 == v1 && p->next->v2 == v2) && !(p->next->v2 == v1 && p->next->v1 == v2))
+            p = p->next;
+        Edge *q = p->next;
+        p->next = q->next;
+        free(q);
+    }
 }
 
 void modiftWeight(Graph *x, int v1, int v2, int w)
