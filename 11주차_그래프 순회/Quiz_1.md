@@ -1,70 +1,66 @@
+## 구조체 상호 참조
+
 ```C
 #include <stdlib.h>
 #include <stdio.h>
+#define FALSE 0
+#define TRUE 1
 
 // Define Struct
-typedef struct Edge
-{
-    int v1, v2;
-    struct Edge *next;
-    int weight;    
-}Edge;
+struct Vertex;
+
 typedef struct IncidentEdge
 {
-    Edge *e;
     struct IncidentEdge *next;
-    int adjV;
+    struct Vertex *adjV;
 }IncidentEdge;
 typedef struct Vertex
 {
-    int vName;
+    int vName, isVisit;
     IncidentEdge *iHead;
     struct Vertex *next;
 }Vertex;
 typedef struct Graph
 {
     Vertex *vHead;
-    Edge *eHead;
 }Graph;
 
 void initGraph(Graph *x)
 {
-    x->eHead = NULL;
     x->vHead = NULL;
 }
 
 Vertex *findVertex(Graph *x, int v)
 {
     Vertex *p = x->vHead;
-    while (p && p->vName != v)
+    while(p && p->vName != v)
         p = p->next;
     return p;
 }
 
-//Make Graph Func
 void makeVertex(Graph *x, int v)
 {
-    Vertex *newNode = malloc(sizeof(Vertex));
-    newNode->vName = v;
-    newNode->iHead = NULL;
-    newNode->next = NULL;
+    Vertex *new = malloc(sizeof(Vertex));
+    new->iHead = NULL;
+    new->isVisit = FALSE;
+    new->next = NULL;
+    new->vName = v;
 
     if (x->vHead == NULL)
-        x->vHead = newNode;
+        x->vHead = new;
     else
     {
         Vertex *p = x->vHead;
         while(p->next != NULL)
             p = p->next;
-        p->next = newNode;
+        p->next = new;
     }
 }
 
-void makeIncidentEdge(Vertex *v, Edge *e, int av)
+void addEdge(Vertex *v, Vertex *av)
 {
     IncidentEdge *new = malloc(sizeof(IncidentEdge));
     new->adjV = av;
-    new->e = e;
     new->next = NULL;
 
     if (v->iHead == NULL)
@@ -72,104 +68,70 @@ void makeIncidentEdge(Vertex *v, Edge *e, int av)
     else
     {
         IncidentEdge *p = v->iHead;
-        if (p->adjV > av)
+        if (p->adjV->vName > av->vName)
         {
             v->iHead = new;
             new->next = p;
-            return ;
         }
-        while(p->next != NULL && p->next->adjV < av)
-            p = p->next;
-        if (p->next)
-            new->next = p->next->next;
-        p->next = new;
-    }
-}
-
-void makeEdge(Graph *x, int v1, int v2, int w)
-{
-    Edge *new = malloc(sizeof(Edge));
-    new->next = NULL;
-    new->v1 = v1;
-    new->v2 = v2;
-    new->weight = w;
-
-    if (x->eHead == NULL)
-        x->eHead = new;
-    else
-    {
-        Edge *p = x->eHead;
-        while(p->next != NULL)
-            p = p->next;
-        p->next = new;
-    }
-
-    Vertex *v = findVertex(x, v1);
-    makeIncidentEdge(v, new, v2);
-    if (v1 != v2)
-    {
-        Vertex *v = findVertex(x, v2);
-        makeIncidentEdge(v, new, v1);
-    }
-}
-
-// Print Graph
-void printGrap(Graph *x)
-{
-    Edge *p = x->eHead;
-    while (p)
-    {
-        printf("v1 : %d, v2 : %d, weight : %d\n", p->v1, p->v2, p->weight);
-        p = p->next;
-    }
-}
-
-void printAdjacencyVertex(Graph *x)
-{
-    Vertex *p = x->vHead;
-    while (p)
-    {
-        printf("%d Vertex connect : ", p->vName);
-        IncidentEdge *q = p->iHead;
-        while (q)
+        else
         {
-            printf("%d ",q->adjV);
-            q = q->next;
+            while (p->next && p->next->adjV->vName < av->vName)
+                p = p->next;
+            IncidentEdge *q = p->next;
+            p->next = new;
+            new->next = q;
         }
-        printf("\n");
-        p = p->next;
     }
 }
 
-void DFS(Graph *x, Vertex *s, int *check)
+void makeIncidentEdge(Graph *x, int v1, int v2)
 {
-    printf(" %d", s->vName);
-    check[s->vName] = 1;
+    Vertex *V1 = findVertex(x, v1);
+    Vertex *V2 = findVertex(x, v2);
+    addEdge(V1, V2);
+
+    if (v1 != v2)
+        addEdge(V2, V1);
+}
+
+void DFS(Graph *x, Vertex *s)
+{
+    s->isVisit = TRUE;
+    printf("%d\n", s->vName);
     IncidentEdge *p = s->iHead;
-    while (p)
+    while(p)
     {
-        int v = p->adjV;
-        if (!check[v])
-            DFS(x, findVertex(x, v), check);
+        Vertex *tmp = p->adjV;
         p = p->next;
+        if (tmp->isVisit) continue;
+        DFS(x, tmp);
     }
 }
 
 int main()
 {
-    Graph G; initGraph(&G);
-    int n ,m, s;
+    Graph x; initGraph(&x);
+    /*makeVertex(&x, 1); makeVertex(&x, 2); makeVertex(&x, 3);
+    makeVertex(&x, 4); makeVertex(&x, 5); makeVertex(&x, 6);
+    makeVertex(&x, 7);
+    
+    makeIncidentEdge(&x, 1, 2); makeIncidentEdge(&x, 3, 2);
+    makeIncidentEdge(&x, 3, 4); makeIncidentEdge(&x, 4, 5);
+    makeIncidentEdge(&x, 5, 6); makeIncidentEdge(&x, 7, 2);
+    makeIncidentEdge(&x, 7, 4); makeIncidentEdge(&x, 7, 5);
+    makeIncidentEdge(&x, 1, 6);*/
+    int n, m, s;
     scanf("%d %d %d", &n, &m, &s);
-    for (int i = 1; i <= n; i++) makeVertex(&G, i);
-    for (int i = 0; i < m; i++) 
+    for (int i = 1; i <= n; i++) makeVertex(&x, i);
+    for (int i = 1; i <= m; i++)
     {
-        int a, b;
-        scanf("%d %d", &a, &b);
-        makeEdge(&G, a, b, 1);
+        int p, q;
+        scanf("%d %d", &p, &q);
+        makeIncidentEdge(&x, p, q);
     }
-    printAdjacencyVertex(&G);
-    Vertex *start = findVertex(&G, s);
-    int *check = calloc(n + 1, sizeof(int));
-    DFS(&G, start, check);
+
+    DFS(&x, findVertex(&x, s));
+
+    return 0;
 }
 ```
