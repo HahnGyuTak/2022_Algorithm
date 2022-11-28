@@ -1,3 +1,4 @@
+```C
 #include <stdlib.h>
 #include <stdio.h>
 #define TRUE 1
@@ -295,3 +296,4 @@ int main()
 
     return 0;
 }
+```
