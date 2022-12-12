@@ -27,19 +27,19 @@ void DP(int cost[], int w[])
     printf("%d\n", dp[5][10]);
 }
 
-int getMin(int cw[])
+int getMax(int cw[])
 {
-    int min;
+    int max;
     for (int i = 0; i < 5; i++)
         if (cw[i] > 0)
         {
-            min = i;
+            max = i;
             break;
         }
     for (int i = 0; i < 5; i++)
-        if (cw[i] > 0 && cw[min] > cw[i])
-            min = i;
-    return min;
+        if (cw[i] > 0 && cw[max] < cw[i])
+            max = i;
+    return max;
 }
 
 void Greedy(int cost[], int w[])
@@ -49,7 +49,7 @@ void Greedy(int cost[], int w[])
         cw[i] = cost[i]/w[i];
     for (int i = 0; i < 5; i++)
     {
-        int j = getMin(cw);
+        int j = getMax(cw);
         if (sum_w + w[j] <= 10)
         {
             sum_w += w[j];
